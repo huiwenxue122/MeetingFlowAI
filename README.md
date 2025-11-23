@@ -1,12 +1,12 @@
-# SalesFlow AI - Multi-Agent Sales Automation System
+# MeetingFlowAI - Multi-Agent Sales Automation System
 
 > **Transform 15 minutes of post-call admin work into 2 minutes** with AI-powered automation
 
-SalesFlow AI is a comprehensive sales automation platform built for the IBM watsonx Orchestrate Hackathon. It uses a multi-agent AI system to automatically process sales meeting transcripts, extract key information, update CRM systems, and generate follow-up communications.
+MeetingFlowAI is a comprehensive sales automation platform built for the IBM watsonx Orchestrate Hackathon. It uses a multi-agent AI system to automatically process sales meeting transcripts, extract key information, update CRM systems, and generate follow-up communications.
 
 ## 🎯 Project Overview
 
-SalesFlow AI leverages IBM watsonx Orchestrate's multi-agent architecture to automate the entire post-meeting workflow:
+MeetingFlowAI leverages IBM watsonx Orchestrate's multi-agent architecture to automate the entire post-meeting workflow:
 
 1. **SalesFlow AI Orchestrator** (Master Agent) - Coordinates all sub-agents
 2. **Sales Intelligence Agent** - Analyzes meeting transcripts and extracts key information
@@ -24,35 +24,41 @@ SalesFlow AI leverages IBM watsonx Orchestrate's multi-agent architecture to aut
 - ✅ **Real-time Processing** - Fast AI processing (< 30 seconds)
 
 ## 🏗️ Architecture
-
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    Frontend (React)                      │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐              │
-│  │   Home   │  │  Results │  │  Agents  │              │
-│  │   Page   │  │   Page   │  │ Selector │              │
-│  └──────────┘  └──────────┘  └──────────┘              │
-│       │              │              │                    │
-│       └──────────────┼──────────────┘                    │
-│                      │                                    │
-│              Watson Chat Widget                          │
-│         (watsonx Orchestrate)                            │
-└──────────────────────┼────────────────────────────────────┘
-                       │
-┌──────────────────────┼────────────────────────────────────┐
-│              Backend API (FastAPI/Express)                │
-│                      │                                    │
-│       ┌──────────────┼──────────────┐                    │
-│       │              │              │                    │
-│  ┌────▼────┐   ┌────▼────┐   ┌────▼────┐               │
-│  │ Watsonx │   │   CRM   │   │  Email  │               │
-│  │   AI    │   │ Service │   │ Service │               │
-│  └─────────┘   └─────────┘   └─────────┘               │
-└──────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│           Frontend (React)                  │
+│  - User Interface                           │
+│  - Watson Chat Widget                       │
+│  - Event Listeners                          │
+└──────────────┬──────────────────────────────┘
+               │
+               │ HTTPS/WebSocket
+               │
+┌──────────────▼──────────────────────────────┐
+│   IBM Watson Orchestrate Platform           │
+│  ┌──────────────────────────────────────┐   │
+│  │  SalesFlow AI Orchestrator Agent     │   │
+│  │  - Receives user input               │   │
+│  │  - Routes to sub-agents              │   │
+│  │  - Aggregates responses              │   │
+│  └──────────────────────────────────────┘   │
+│            ↓         ↓         ↓             │
+│  ┌─────────┐  ┌──────────┐  ┌──────────┐   │
+│  │Agent 1  │  │Agent 2   │  │Agent 3   │   │
+│  │Sales    │  │CRM       │  │Engagement│   │
+│  │Intel    │  │Engine    │  │Auto      │   │
+│  └─────────┘  └──────────┘  └──────────┘   │
+│       ↓            ↓              ↓          │
+└───────┼────────────┼──────────────┼──────────┘
+        │            │              │
+        ↓            ↓              ↓
+┌────────────┐ ┌────────────┐ ┌────────────┐
+│IBM Granite │ │Salesforce  │ │Email/      │
+│13B Model   │ │CRM API     │ │Calendar API│
+└────────────┘ └────────────┘ └────────────┘
 ```
 
 ## 📁 Project Structure
-
 ```
 MeetingFlowAI/
 ├── frontend/                 # React + Vite frontend
@@ -68,20 +74,6 @@ MeetingFlowAI/
 │   │   └── App.jsx               # Main app with routing
 │   └── package.json
 │
-├── backend-python/          # Python FastAPI backend
-│   ├── main.py              # FastAPI application
-│   ├── services/
-│   │   ├── watsonx_service.py    # Watsonx AI integration
-│   │   └── crm_service.py        # Salesforce CRM integration
-│   └── requirements.txt
-│
-├── backend-nodejs/          # Node.js Express backend (alternative)
-│   ├── server.js           # Express application
-│   ├── services/
-│   │   ├── watsonxService.js
-│   │   └── crmService.js
-│   └── package.json
-│
 └── README.md               # This file
 ```
 
@@ -89,84 +81,28 @@ MeetingFlowAI/
 
 ### Prerequisites
 
-- **Node.js** v18+ and npm
-- **Python** 3.9+ (for Python backend)
-- **IBM watsonx Orchestrate** account and API key
-- **IBM watsonx AI** credentials (optional, for data extraction)
+- ✅ Node.js 18+
+- ✅ IBM Cloud account with watsonx Orchestrate access
+- ✅ Watson Orchestrate agents deployed
+- ✅ Salesforce developer account (optional, uses mock mode if not configured)
 
-### 1. Clone the Repository
+### Frontend Setup
 
 ```bash
+# Clone repository
 git clone https://github.com/huiwenxue122/MeetingFlowAI.git
-cd MeetingFlowAI
-```
-
-### 2. Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Frontend will run on `http://localhost:5173`
-
-### 3. Backend Setup (Choose Python or Node.js)
-
-#### Option A: Python Backend (Recommended)
-
-```bash
-cd backend-python
-
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+cd MeetingFlowAI/frontend
 
 # Install dependencies
-pip install -r requirements.txt
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your credentials
-
-# Run server
-python main.py
-```
-
-Backend will run on `http://localhost:3000`
-
-#### Option B: Node.js Backend
-
-```bash
-cd backend-nodejs
 npm install
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your credentials
+# Configure Watson (already done in watson.js)
+# Update agent IDs and environment IDs if needed
 
-# Run server
-npm start
-```
+# Start development server
+npm run dev
 
-### 4. Environment Variables
-
-Create a `.env` file in the backend directory:
-
-```env
-# Watsonx AI (for data extraction)
-WATSONX_AI_APIKEY=your_api_key
-WATSONX_AI_URL=https://us-south.ml.cloud.ibm.com
-WATSONX_AI_PROJECT_ID=your_project_id
-
-# Salesforce (optional - uses mock if not provided)
-SALESFORCE_USERNAME=your_username
-SALESFORCE_PASSWORD=your_password
-SALESFORCE_SECURITY_TOKEN=your_token
-
-# Server
-PORT=3000
-CORS_ORIGIN=http://localhost:5173
+# Frontend runs at: http://localhost:5173
 ```
 
 ## 🎨 Frontend Features
@@ -195,52 +131,6 @@ CORS_ORIGIN=http://localhost:5173
   - CRM Intelligence Engine
   - Engagement Automation Specialist
 
-## 🔌 API Endpoints
-
-### Backend API (Python/Node.js)
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | Health check |
-| POST | `/api/meeting/process` | Process meeting transcript |
-| GET | `/api/meetings` | Get all processed meetings |
-| GET | `/api/meeting/{id}` | Get specific meeting details |
-| GET | `/api/stats` | Get dashboard statistics |
-
-### Example Request
-
-```bash
-POST /api/meeting/process
-Content-Type: application/json
-
-{
-  "meeting_text": "Meeting with Sarah Johnson, VP Operations at TechCorp Inc. Discussed their manual data entry challenges, $50,000 budget, Q1 2026 timeline..."
-}
-```
-
-### Example Response
-
-```json
-{
-  "success": true,
-  "meeting_id": "uuid",
-  "extracted_data": {
-    "customer_name": "Sarah Johnson",
-    "company": "TechCorp Inc",
-    "role": "VP Operations",
-    "pain_points": ["Manual data entry", "High costs"],
-    "budget": "$50,000",
-    "timeline": "Q1 2026",
-    "decision_makers": ["Sarah Johnson"],
-    "next_steps": ["Send proposal", "Schedule demo"]
-  },
-  "crm_updated": true,
-  "crm_record_id": "003...",
-  "action_plan": [...],
-  "time_saved": 13,
-  "message": "Meeting processed successfully!"
-}
-```
 
 ## 🤖 AI Agents Configuration
 
@@ -285,16 +175,6 @@ export const WATSON_AGENTS = {
 - **Tailwind CSS** 3.4.18 - Styling
 - **watsonx Orchestrate** - Multi-agent chat widget
 
-### Backend (Python)
-- **FastAPI** - Web framework
-- **IBM watsonx AI** - AI data extraction (Granite-13b-chat-v2)
-- **Simple Salesforce** - CRM integration
-- **Uvicorn** - ASGI server
-
-### Backend (Node.js - Alternative)
-- **Express** - Web framework
-- **@ibm-cloud/watsonx-ai** - AI integration
-- **jsforce** - Salesforce integration
 
 ## 📊 Workflow
 
@@ -308,80 +188,20 @@ export const WATSON_AGENTS = {
 
 ## 🔐 Security Notes
 
-- API keys should be stored in `.env` files (not committed to git)
-- CORS is configured for development (update for production)
-- Salesforce credentials are optional (system uses mock CRM if not provided)
-
-## 🧪 Testing
-
-### Test Watsonx AI Integration
-
-**Python:**
-```bash
-cd backend-python
-python test_watsonx.py
-```
-
-**Node.js:**
-```bash
-cd backend-nodejs
-npm test
-```
-
-### Test Frontend
-
-```bash
-cd frontend
-npm run dev
-# Open http://localhost:5173
-```
+- All communication is handled by the Watson Orchestrate widget, which provides a secure connection.
+- No backend is needed, reducing the attack surface.
+- Salesforce integration is handled within Watson Orchestrate, ensuring enterprise-grade security.
 
 ## 📝 Development Notes
-
-### Current Status
-
-- ✅ Frontend fully implemented with all pages
-- ✅ Backend API endpoints working
-- ✅ Watsonx AI integration for data extraction
-- ✅ Watsonx Orchestrate Chat Widget integrated
-- ✅ CRM integration (Salesforce + mock fallback)
-- ⚠️ Frontend calls `/api/orchestrate` but backend has `/api/meeting/process`
-  - **Note**: Frontend will fallback to mock data if API call fails
-
-### Known Limitations
-
-1. **API Endpoint Mismatch**: Frontend expects `/api/orchestrate` but backend provides `/api/meeting/process`
-   - **Workaround**: Frontend gracefully falls back to mock data
-   - **Future**: Implement `/api/orchestrate` endpoint that uses watsonx Orchestrate API
-
-2. **Data Persistence**: Currently uses in-memory storage
-   - **Future**: Add database (PostgreSQL/SQLite)
-
-3. **Watsonx Orchestrate Backend Integration**: Chat widget works, but backend orchestration API not yet implemented
-   - **Future**: Add backend endpoint that calls watsonx Orchestrate API for multi-agent coordination
+The project is a frontend-only application that communicates directly with the IBM watsonx Orchestrate platform via the embedded chat widget. This simplifies the architecture and deployment, as no backend is required. All state management is handled client-side in React.
 
 ## 🚀 Deployment
-
-### Frontend (Vercel/Netlify)
+The frontend can be deployed to any static hosting service like Vercel, Netlify, or GitHub Pages.
 
 ```bash
 cd frontend
 npm run build
-# Deploy dist/ folder
-```
-
-### Backend (Railway/Render/Heroku)
-
-```bash
-# Python
-cd backend-python
-# Set environment variables
-# Deploy with uvicorn
-
-# Node.js
-cd backend-nodejs
-# Set environment variables
-# Deploy with npm start
+# Deploy the dist/ folder
 ```
 
 ## 📚 Documentation
@@ -401,15 +221,14 @@ MIT License
 
 ## 👥 Team
 
-- **Claire** - AI Engineer and Frontend Developer 
-- **Abdullah** - Backend Developer 
-- **goodgame#069** - Backend Developer 
+- **Claire** - AI Engineer and Frontend Developer - [huiwenxue122](https://github.com/huiwenxue122)
+- **Abdullah** - Backend Developer - [MajorAbdullah](https://github.com/MajorAbdullah)
+- **808vita** - Backend Developer - [808vita](https://github.com/808vita)
 
 ## 🙏 Acknowledgments
 
 - IBM watsonx Orchestrate team
 - IBM watsonx AI for Granite models
-- FastAPI and React communities
 
 ---
 
