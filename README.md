@@ -1,256 +1,416 @@
-# MeetingFlow AI - Project Requirements
+# SalesFlow AI - Multi-Agent Sales Automation System
 
-**Team:** Claire (AI Engineer), Abdullah (Backend), goodgame#069 (Frontend)
-**Timeline:** Nov 21-23, 2025 (48 hours)
-**Goal:** IBM watsonx Orchestrate Hackathon submission
+> **Transform 15 minutes of post-call admin work into 2 minutes** with AI-powered automation
 
----
+SalesFlow AI is a comprehensive sales automation platform built for the IBM watsonx Orchestrate Hackathon. It uses a multi-agent AI system to automatically process sales meeting transcripts, extract key information, update CRM systems, and generate follow-up communications.
 
-## 1. Project Overview
+## 🎯 Project Overview
 
-**Problem:** Sales reps spend 15-20 minutes after every call on manual admin work (CRM updates, note-taking, follow-up planning).
+SalesFlow AI leverages IBM watsonx Orchestrate's multi-agent architecture to automate the entire post-meeting workflow:
 
-**Solution:** AI-powered automation that processes meeting notes and handles all post-call workflows automatically.
+1. **SalesFlow AI Orchestrator** (Master Agent) - Coordinates all sub-agents
+2. **Sales Intelligence Agent** - Analyzes meeting transcripts and extracts key information
+3. **CRM Intelligence Engine** - Updates Salesforce CRM with extracted data
+4. **Engagement Automation Specialist** - Generates personalized follow-up emails and action plans
 
-**Value Prop:** Reduce post-call admin from 15 minutes to 2 minutes.
+### Key Features
 
----
+- ✅ **Multi-Agent AI Workflow** - Orchestrated by watsonx Orchestrate
+- ✅ **Intelligent Data Extraction** - Uses IBM Granite models to extract structured data
+- ✅ **CRM Integration** - Automatic Salesforce updates (with mock fallback)
+- ✅ **Email Generation** - AI-powered follow-up email creation
+- ✅ **Interactive Chat** - Direct interaction with AI agents via Watson Chat Widget
+- ✅ **Beautiful UI** - Modern React frontend with Tailwind CSS
+- ✅ **Real-time Processing** - Fast AI processing (< 30 seconds)
 
-## 2. Functional Requirements (MUST HAVE)
+## 🏗️ Architecture
 
-### FR1: Meeting Input
-- User can upload/paste meeting transcript or notes
-- Support text input (min 100 words, max 10,000 words)
-- Simple text box UI
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Frontend (React)                      │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐              │
+│  │   Home   │  │  Results │  │  Agents  │              │
+│  │   Page   │  │   Page   │  │ Selector │              │
+│  └──────────┘  └──────────┘  └──────────┘              │
+│       │              │              │                    │
+│       └──────────────┼──────────────┘                    │
+│                      │                                    │
+│              Watson Chat Widget                          │
+│         (watsonx Orchestrate)                            │
+└──────────────────────┼────────────────────────────────────┘
+                       │
+┌──────────────────────┼────────────────────────────────────┐
+│              Backend API (FastAPI/Express)                │
+│                      │                                    │
+│       ┌──────────────┼──────────────┐                    │
+│       │              │              │                    │
+│  ┌────▼────┐   ┌────▼────┐   ┌────▼────┐               │
+│  │ Watsonx │   │   CRM   │   │  Email  │               │
+│  │   AI    │   │ Service │   │ Service │               │
+│  └─────────┘   └─────────┘   └─────────┘               │
+└──────────────────────────────────────────────────────────┘
+```
 
-### FR2: AI Extraction
-- Extract customer name, company, role
-- Extract pain points discussed
-- Extract budget mentioned (if any)
-- Extract timeline/urgency
-- Extract decision makers
-- Extract next steps/action items
+## 📁 Project Structure
 
-### FR3: CRM Integration
-- Connect to Salesforce (or mock CRM for demo)
-- Auto-create or update contact record
-- Add meeting notes to activity log
-- Update deal stage if applicable
+```
+MeetingFlowAI/
+├── frontend/                 # React + Vite frontend
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Home.jsx          # Main meeting input page
+│   │   │   ├── Results.jsx       # Results dashboard
+│   │   │   └── AgentSelector.jsx # Agent selection page
+│   │   ├── components/
+│   │   │   └── WatsonChat.jsx     # Watson Chat Widget integration
+│   │   ├── config/
+│   │   │   └── watson.js          # Watson configuration
+│   │   └── App.jsx               # Main app with routing
+│   └── package.json
+│
+├── backend-python/          # Python FastAPI backend
+│   ├── main.py              # FastAPI application
+│   ├── services/
+│   │   ├── watsonx_service.py    # Watsonx AI integration
+│   │   └── crm_service.py        # Salesforce CRM integration
+│   └── requirements.txt
+│
+├── backend-nodejs/          # Node.js Express backend (alternative)
+│   ├── server.js           # Express application
+│   ├── services/
+│   │   ├── watsonxService.js
+│   │   └── crmService.js
+│   └── package.json
+│
+└── README.md               # This file
+```
 
-### FR4: Action Plan Generation
-- Generate follow-up task list
-- Suggest optimal follow-up timing
-- Draft follow-up email template
+## 🚀 Quick Start
 
-### FR5: Dashboard
-- Show list of processed meetings
-- Display extracted information
-- Show time saved metrics
-- Show AI actions taken
+### Prerequisites
 
----
+- **Node.js** v18+ and npm
+- **Python** 3.9+ (for Python backend)
+- **IBM watsonx Orchestrate** account and API key
+- **IBM watsonx AI** credentials (optional, for data extraction)
 
-## 3. Non-Functional Requirements
+### 1. Clone the Repository
 
-### NFR1: Performance
-- Process meeting transcript in < 30 seconds
-- Dashboard loads in < 2 seconds
+```bash
+git clone https://github.com/huiwenxue122/MeetingFlowAI.git
+cd MeetingFlowAI
+```
 
-### NFR2: Accuracy
-- AI extraction accuracy > 80% for key fields
-- Minimal hallucination/made-up data
+### 2. Frontend Setup
 
-### NFR3: User Experience
-- Clean, professional UI
-- Clear visual feedback during processing
-- Mobile-responsive (nice to have)
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### NFR4: Security
-- API keys stored in .env (not committed)
-- No sensitive data logged
+Frontend will run on `http://localhost:5173`
 
-### NFR5: Reliability
-- Graceful error handling
-- Clear error messages to user
+### 3. Backend Setup (Choose Python or Node.js)
 
----
+#### Option A: Python Backend (Recommended)
 
-## 4. Technical Stack
+```bash
+cd backend-python
 
-**Frontend:**
-- React 18+
-- Tailwind CSS
-- React Router (if needed)
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-**Backend:**
-- Python FastAPI OR Node.js Express (Abdullah's choice)
-- RESTful API design
+# Install dependencies
+pip install -r requirements.txt
 
-**AI/ML:**
-- watsonx Orchestrate (workflow orchestration)
-- watsonx.ai / Granite models (NLP extraction)
-- LangChain (optional, if helpful)
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your credentials
 
-**Integrations:**
-- Salesforce API (or mock for demo)
-- Gmail API (optional, if time allows)
+# Run server
+python main.py
+```
 
-**Deployment:**
-- Frontend: Vercel or Netlify
-- Backend: Railway, Render, or Heroku
-- Database: SQLite or PostgreSQL (if needed)
+Backend will run on `http://localhost:3000`
 
----
+#### Option B: Node.js Backend
 
-## 5. MVP Scope (MUST COMPLETE)
+```bash
+cd backend-nodejs
+npm install
 
-✅ **Core Demo Flow:**
-1. User lands on homepage
-2. User pastes meeting transcript
-3. Clicks "Process Meeting"
-4. AI extracts key info (show loading state)
-5. Display extracted data in structured format
-6. Show "CRM Updated" confirmation
-7. Display generated action plan
-8. Dashboard shows meeting history
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your credentials
 
-✅ **Minimum Features:**
-- Meeting input + processing
-- AI extraction working
-- At least 1 API integration (Salesforce or mock)
-- Basic dashboard
-- Time saved calculation
+# Run server
+npm start
+```
 
----
+### 4. Environment Variables
 
-## 6. Nice-to-Have (IF TIME ALLOWS)
+Create a `.env` file in the backend directory:
 
-⭐ Voice input (upload audio file)
-⭐ Multiple CRM support (HubSpot, Pipedrive)
-⭐ Email integration (auto-send follow-up)
-⭐ Team collaboration (multiple users)
-⭐ Analytics dashboard (trends over time)
-⭐ Calendar integration (auto-schedule follow-ups)
+```env
+# Watsonx AI (for data extraction)
+WATSONX_AI_APIKEY=your_api_key
+WATSONX_AI_URL=https://us-south.ml.cloud.ibm.com
+WATSONX_AI_PROJECT_ID=your_project_id
 
-**RULE: Do NOT start nice-to-haves until MUST-HAVEs are 100% done!**
+# Salesforce (optional - uses mock if not provided)
+SALESFORCE_USERNAME=your_username
+SALESFORCE_PASSWORD=your_password
+SALESFORCE_SECURITY_TOKEN=your_token
 
----
+# Server
+PORT=3000
+CORS_ORIGIN=http://localhost:5173
+```
 
-## 7. API Endpoints (Backend)
+## 🎨 Frontend Features
 
-### POST /api/meeting/process
-- Input: { meeting_text: string }
-- Output: { extracted_data: object, actions_taken: array }
+### Home Page (`/`)
+- **Meeting Input Form** - Paste sales meeting transcripts
+- **Multi-Agent Architecture Visualization** - See how agents work together
+- **Real-time Character Count** - Minimum 100 characters required
+- **Watson Chat Widget** - Interactive chat with SalesFlow Orchestrator
+- **Statistics Display** - Time saved, processing speed, accuracy
 
-### GET /api/meetings
-- Output: List of processed meetings
+### Results Page (`/results`)
+- **Multi-Agent Processing Status** - Visual workflow of all 3 agents
+- **Tabbed Interface**:
+  - **Overview** - Customer and deal information
+  - **Meeting Analysis** - Extracted pain points and decision makers
+  - **CRM Update** - Salesforce update status and actions
+  - **Follow-up Email** - Generated email with copy functionality
+- **Time Saved Metric** - Shows minutes saved per meeting
 
-### GET /api/meeting/:id
-- Output: Details of specific meeting
+### Agent Selector Page (`/agents`)
+- **Interactive Agent Dashboard** - Select and chat with different AI agents
+- **4 Available Agents**:
+  - SalesFlow AI Orchestrator (Master)
+  - Sales Intelligence Agent
+  - CRM Intelligence Engine
+  - Engagement Automation Specialist
 
-### POST /api/crm/update
-- Input: { contact_data: object }
-- Output: { success: boolean, crm_record_id: string }
+## 🔌 API Endpoints
 
----
+### Backend API (Python/Node.js)
 
-## 8. Data Models
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/health` | Health check |
+| POST | `/api/meeting/process` | Process meeting transcript |
+| GET | `/api/meetings` | Get all processed meetings |
+| GET | `/api/meeting/{id}` | Get specific meeting details |
+| GET | `/api/stats` | Get dashboard statistics |
 
-### Meeting
-```json
+### Example Request
+
+```bash
+POST /api/meeting/process
+Content-Type: application/json
+
 {
-  "id": "uuid",
-  "timestamp": "datetime",
-  "raw_text": "string",
-  "extracted_data": {
-    "customer_name": "string",
-    "company": "string",
-    "role": "string",
-    "pain_points": ["string"],
-    "budget": "string",
-    "timeline": "string",
-    "decision_makers": ["string"],
-    "next_steps": ["string"]
-  },
-  "crm_record_id": "string",
-  "time_saved": "integer (minutes)",
-  "status": "processed|failed"
+  "meeting_text": "Meeting with Sarah Johnson, VP Operations at TechCorp Inc. Discussed their manual data entry challenges, $50,000 budget, Q1 2026 timeline..."
 }
 ```
 
----
+### Example Response
 
-## 9. UI Components (Frontend)
-
-### Pages:
-1. Landing/Home - Meeting input
-2. Processing - Loading state
-3. Results - Extracted data + actions
-4. Dashboard - Meeting history
-
-### Components:
-- MeetingInput.jsx
-- ProcessingLoader.jsx
-- ExtractedDataCard.jsx
-- ActionPlanCard.jsx
-- MeetingList.jsx
-- TimesSavedMetric.jsx
-
----
-
-## 10. Timeline & Milestones
-
-**Day 1 (Nov 21, today):**
-- Hour 0-2: Setup (repos, credentials, architecture)
-- Hour 2-8: Core backend API + AI integration
-- Hour 8-12: Basic frontend scaffold
-
-**Day 2 (Nov 22):**
-- Hour 12-24: Complete all MVP features
-- Hour 24-30: Integration + testing
-- Hour 30-36: Bug fixes + polish
-
-**Day 3 (Nov 23):**
-- Hour 36-40: Final testing
-- Hour 40-44: Demo video + presentation
-- Hour 44-46: Submit!
-
----
-
-## 11. Success Criteria
-
-✅ Working end-to-end demo (meeting input → AI processing → CRM update)
-✅ Clean, professional UI
-✅ 2-minute demo video showing clear value
-✅ All code on GitHub
-✅ Submitted before deadline
-
----
-
-## 12. Division of Labor
-
- (AI Engineer):**
-- watsonx integration
-- AI extraction logic
-- Prompt engineering
-- Overall coordination
-
- (Backend):**
-- API architecture
-- Backend endpoints
-- CRM integration
-- Database (if needed)
-
- (Frontend):**
-- React components
-- UI/UX
-- Dashboard
-- Styling
-
----
-
-## Questions? Comments?
-Add below! 👇
+```json
+{
+  "success": true,
+  "meeting_id": "uuid",
+  "extracted_data": {
+    "customer_name": "Sarah Johnson",
+    "company": "TechCorp Inc",
+    "role": "VP Operations",
+    "pain_points": ["Manual data entry", "High costs"],
+    "budget": "$50,000",
+    "timeline": "Q1 2026",
+    "decision_makers": ["Sarah Johnson"],
+    "next_steps": ["Send proposal", "Schedule demo"]
+  },
+  "crm_updated": true,
+  "crm_record_id": "003...",
+  "action_plan": [...],
+  "time_saved": 13,
+  "message": "Meeting processed successfully!"
+}
 ```
 
---
+## 🤖 AI Agents Configuration
+
+The system uses IBM watsonx Orchestrate with the following agents:
+
+```javascript
+// frontend/src/config/watson.js
+export const WATSON_AGENTS = {
+  SALESFLOW_ORCHESTRATOR: {
+    agentId: "bb753301-6502-4670-85a7-cb368b1e9dcb",
+    agentEnvironmentId: "6ad60b90-69b9-4cf5-8285-59e5b3874eea",
+    name: "SalesFlow AI Orchestrator",
+    description: "Master orchestrator that controls all other 3 agents"
+  },
+  SALES_INTELLIGENCE_AGENT: {
+    agentId: "8176364b-a514-45b8-a303-8f2cc56e4443",
+    agentEnvironmentId: "17c4ff54-a306-467d-8181-64612aaf097b",
+    name: "Sales Intelligence Agent",
+    description: "Analyzes sales meeting notes and extracts key information"
+  },
+  CRM_INTELLIGENCE_ENGINE: {
+    agentId: "deaecff4-c279-49bd-b1f8-f933b746cdac",
+    agentEnvironmentId: "20be2637-dce3-4f54-b5f4-a997c680da5a",
+    name: "CRM Intelligence Engine",
+    description: "Updates CRM and manages customer data"
+  },
+  ENGAGEMENT_AUTOMATION_SPECIALIST: {
+    agentId: "513420e1-b3fc-492a-8db1-74bb39be218a",
+    agentEnvironmentId: "433a5adb-4589-4ec4-bdab-e511692755ee",
+    name: "Engagement Automation Specialist",
+    description: "Generates follow-up emails and action plans"
+  }
+};
+```
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **React** 19.2.0 - UI framework
+- **Vite** 7.2.4 - Build tool
+- **React Router** 7.9.6 - Routing
+- **Tailwind CSS** 3.4.18 - Styling
+- **watsonx Orchestrate** - Multi-agent chat widget
+
+### Backend (Python)
+- **FastAPI** - Web framework
+- **IBM watsonx AI** - AI data extraction (Granite-13b-chat-v2)
+- **Simple Salesforce** - CRM integration
+- **Uvicorn** - ASGI server
+
+### Backend (Node.js - Alternative)
+- **Express** - Web framework
+- **@ibm-cloud/watsonx-ai** - AI integration
+- **jsforce** - Salesforce integration
+
+## 📊 Workflow
+
+1. **User Input** - Sales rep pastes meeting transcript on Home page
+2. **AI Processing** - SalesFlow Orchestrator coordinates:
+   - Agent 1: Extracts customer info, pain points, budget, timeline
+   - Agent 2: Updates Salesforce CRM with extracted data
+   - Agent 3: Generates personalized follow-up email
+3. **Results Display** - All extracted data shown in organized tabs
+4. **Time Saved** - System calculates and displays time saved (typically 13 minutes)
+
+## 🔐 Security Notes
+
+- API keys should be stored in `.env` files (not committed to git)
+- CORS is configured for development (update for production)
+- Salesforce credentials are optional (system uses mock CRM if not provided)
+
+## 🧪 Testing
+
+### Test Watsonx AI Integration
+
+**Python:**
+```bash
+cd backend-python
+python test_watsonx.py
+```
+
+**Node.js:**
+```bash
+cd backend-nodejs
+npm test
+```
+
+### Test Frontend
+
+```bash
+cd frontend
+npm run dev
+# Open http://localhost:5173
+```
+
+## 📝 Development Notes
+
+### Current Status
+
+- ✅ Frontend fully implemented with all pages
+- ✅ Backend API endpoints working
+- ✅ Watsonx AI integration for data extraction
+- ✅ Watsonx Orchestrate Chat Widget integrated
+- ✅ CRM integration (Salesforce + mock fallback)
+- ⚠️ Frontend calls `/api/orchestrate` but backend has `/api/meeting/process`
+  - **Note**: Frontend will fallback to mock data if API call fails
+
+### Known Limitations
+
+1. **API Endpoint Mismatch**: Frontend expects `/api/orchestrate` but backend provides `/api/meeting/process`
+   - **Workaround**: Frontend gracefully falls back to mock data
+   - **Future**: Implement `/api/orchestrate` endpoint that uses watsonx Orchestrate API
+
+2. **Data Persistence**: Currently uses in-memory storage
+   - **Future**: Add database (PostgreSQL/SQLite)
+
+3. **Watsonx Orchestrate Backend Integration**: Chat widget works, but backend orchestration API not yet implemented
+   - **Future**: Add backend endpoint that calls watsonx Orchestrate API for multi-agent coordination
+
+## 🚀 Deployment
+
+### Frontend (Vercel/Netlify)
+
+```bash
+cd frontend
+npm run build
+# Deploy dist/ folder
+```
+
+### Backend (Railway/Render/Heroku)
+
+```bash
+# Python
+cd backend-python
+# Set environment variables
+# Deploy with uvicorn
+
+# Node.js
+cd backend-nodejs
+# Set environment variables
+# Deploy with npm start
+```
+
+## 📚 Documentation
+
+- [Watsonx Setup Guide](./WATSONX_SETUP_GUIDE.md)
+- [Frontend Setup Guide](./FRONTEND_SETUP_README.md)
+- [Project Requirements](./PROJECT_REQUIREMENTS.md)
+- [Project Structure](./PROJECT_STRUCTURE.md)
+
+## 🤝 Contributing
+
+This project was built for the IBM watsonx Orchestrate Hackathon. Contributions are welcome!
+
+## 📄 License
+
+MIT License
+
+## 👥 Team
+
+- **Claire** - AI Engineer (watsonx integration, AI extraction)
+- **Abdullah** - Backend Developer (API architecture, CRM integration)
+- **goodgame#069** - Frontend Developer (React UI, UX design)
+
+## 🙏 Acknowledgments
+
+- IBM watsonx Orchestrate team
+- IBM watsonx AI for Granite models
+- FastAPI and React communities
+
+---
+
+**Built with ❤️ for the IBM watsonx Orchestrate Hackathon**
