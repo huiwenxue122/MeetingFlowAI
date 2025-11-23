@@ -7,24 +7,9 @@ const Results = () => {
   const { transcript } = location.state || {};
   const [activeTab, setActiveTab] = useState('overview');
   const [isLoading, setIsLoading] = useState(true);
+  const [results, setResults] = useState(null);
 
-  useEffect(() => {
-    // 检查是否有数据
-    if (!transcript) {
-      navigate('/');
-      return;
-    }
-
-    // 模拟加载完成
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [transcript, navigate]);
-
-  // Mock data
-  const results = {
+  const mockData = {
     meetingAnalysis: {
       customer_name: "Sarah Johnson",
       company: "TechCorp Inc",
@@ -37,11 +22,10 @@ const Results = () => {
       budget: "$150,000",
       timeline: "Q1 2026",
       decision_makers: ["Sarah Johnson (VP Operations)", "Michael Chen (CEO)", "James Park (IT Director)"],
-      next_steps: [
-        "Send demo video by Friday",
-        "CEO presentation next Tuesday 2pm",
-        "Provide case study from similar manufacturing company"
-      ]
+        next_steps: [
+          "Follow up with client on action items",
+          "Schedule next meeting"
+        ]
     },
     crmUpdate: {
       status: "✅ Updated",
@@ -56,36 +40,105 @@ const Results = () => {
     },
     followUpEmail: {
       subject: "Re: AI-Powered Data Automation for TechCorp",
-      body: `Hi Sarah,
-
-Thank you for the productive conversation today about TechCorp's data entry challenges.
-
-Key Points from Our Discussion:
-- Current manual process costs ~$50K annually in labor + $30K in errors
-- Team of 5 spending 20 hours/week on data entry
-- Decision needed by Q1 2026
-
-Next Steps:
-1. Demo video - sending by Friday
-2. CEO presentation - Tuesday 2pm (I'll prepare slides)
-3. Case study - similar manufacturing company
-
-Looking forward to showing how our AI solution can reduce your processing time from 15 minutes to 2 minutes per record.
-
-Best regards,
-[Your Name]`
+      body: `Hi Sarah,\n\nThank you for the productive conversation...`
     },
     timeSaved: 13
   };
 
+  useEffect(() => {
+    const parseTranscript = (text) => {
+      const getSection = (start, end) => {
+        const startIndex = text.indexOf(start);
+        if (startIndex === -1) return '';
+        const endIndex = end ? text.indexOf(end, startIndex) : text.length;
+        return text.substring(startIndex + start.length, endIndex).trim();
+      };
+
+      const extractValue = (section, key, fallback = 'N/A') => {
+        const regex = new RegExp(`^${key}:\\s*(.+)`, 'm');
+        const match = section.match(regex);
+        return match ? match[1].trim() : fallback;
+      };
+
+      const extractList = (section, heading, fallback = []) => {
+        const blockStartIndex = section.indexOf(heading);
+        if (blockStartIndex === -1) return fallback;
+      
+        // Find the start of the next '===' or the end of the section
+        let blockEndIndex = section.indexOf('===', blockStartIndex + heading.length);
+        if (blockEndIndex === -1) {
+          blockEndIndex = section.length;
+        }
+      
+        const block = section.substring(blockStartIndex + heading.length, blockEndIndex);
+      
+        if (!block.trim()) return fallback;
+      
+        const items = block.split('\n').filter(line => /^\d+\.\s*|^-\s*/.test(line.trim()));
+        
+        if (items.length === 0) return fallback;
+      
+        return items.map(item => item.replace(/^\d+\.\s*|-\s*/, '').trim());
+      };
+
+      const extractEmailBody = (section) => {
+        const bodyStart = section.indexOf('**Email Body:**');
+        if (bodyStart === -1) return 'Email body not found.';
+        const bodyText = section.substring(bodyStart + '**Email Body:**'.length);
+        const bodyEnd = bodyText.indexOf('**Email Personalization Notes:**');
+        return bodyText.substring(0, bodyEnd !== -1 ? bodyEnd : undefined).trim();
+      };
+
+      const meetingAnalysisText = getSection('STEP 1: MEETING INTELLIGENCE', 'STEP 2: CRM ASSESSMENT');
+      const crmAssessmentText = getSection('STEP 2: CRM ASSESSMENT', 'STEP 3: ENGAGEMENT STRATEGY');
+      const engagementStrategyText = getSection('STEP 3: ENGAGEMENT STRATEGY');
+
+      const nextSteps = extractList(meetingAnalysisText, '=== NEXT STEPS MENTIONED ===');
+
+      return {
+        meetingAnalysis: {
+          customer_name: extractValue(meetingAnalysisText, "Name"),
+          company: extractValue(meetingAnalysisText, "Company"),
+          role: extractValue(meetingAnalysisText, "Role"),
+          pain_points: extractList(meetingAnalysisText, 'Buying Signals:'),
+          budget: extractValue(meetingAnalysisText, "Budget"),
+          timeline: extractValue(meetingAnalysisText, "Timeline"),
+          decision_makers: extractList(meetingAnalysisText, 'Decision Makers:'),
+          next_steps: nextSteps.length > 0 ? nextSteps : mockData.meetingAnalysis.next_steps
+        },
+        crmUpdate: {
+          status: "✅ Update Instructions Generated",
+          actions: extractList(crmAssessmentText, 'IMMEDIATE (24-48 hours):'),
+          dealScore: extractValue(crmAssessmentText, "Opportunity Strength")
+        },
+        followUpEmail: {
+          subject: extractValue(engagementStrategyText, "Subject Line"),
+          body: extractEmailBody(engagementStrategyText)
+        },
+        timeSaved: 13 // Mocked
+      };
+    };
+
+    if (!transcript) {
+      setResults(mockData);
+    } else {
+      const parsed = parseTranscript(transcript);
+      setResults(parsed);
+    }
+
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, [transcript, navigate]);
+
   const handleCopyEmail = () => {
-    const emailText = `Subject: ${results.followUpEmail.subject}\n\n${results.followUpEmail.body}`;
-    navigator.clipboard.writeText(emailText);
-    alert('✅ Email copied to clipboard!');
+    if (results) {
+      const emailText = `Subject: ${results.followUpEmail.subject}\n\n${results.followUpEmail.body}`;
+      navigator.clipboard.writeText(emailText);
+      alert('✅ Email copied to clipboard!');
+    }
   };
 
-  // Loading 状态
-  if (isLoading) {
+  if (isLoading || !results) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">

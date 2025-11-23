@@ -2,8 +2,8 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import WatsonChat from '../components/WatsonChat';
 import { WATSON_AGENTS } from '../config/watson';
-import ExtractedDataCard from '../components/ExtractedDataCard';
 import ProcessingLoader from '../components/ProcessingLoader';
+import FullAnalysis from '../components/FullAnalysis';
 
 const SAMPLES = {
   AGENT_1: `Meeting with Sarah Johnson, VP Operations at TechCorp Inc. Sarah's email: sjohnson@techcorp.com Sarah's phone: (555) 123-4567 Budget: $150,000 approved for this fiscal year - Sarah has sign-off authority up to $200K Timeline: Need to decide by end of Q1 (March 31st) - they have a board meeting April 1st where they need to show progress Pain point: Current manual data entry takes 20 hours/week across their operations team of 5 people. This is costing approximately $50,000 annually in labor, plus another $30K in errors and rework. Sarah said: "This is our top priority for Q1. We're hemorrhaging money on manual processes." Impressed with our automation features, especially the AI-powered data extraction. Asked detailed questions about implementation timeline and ROI calculation. Will schedule demo for CEO next week - CEO name is Michael Chen, he's the final decision maker for purchases over $100K. Also mentioned they're currently using Salesforce but very dissatisfied with automation capabilities. Quote: "Salesforce is great for CRM but terrible for actual workflow automation." Decision process: Sarah will present to CEO with IT Director (James Park) next week. If approved, can start implementation immediately. Next steps agreed: 1. Send demo video by Friday 2. CEO presentation next Tuesday 2pm 3. Provide case study from similar manufacturing company Industry: Manufacturing, specifically automotive parts Company size: 250 employees, $50M annual revenue`,
@@ -13,8 +13,8 @@ const SAMPLES = {
 
 const Home = () => {
   const [copiedAgent, setCopiedAgent] = useState(null);
-  const [aiResults, setAiResults] = useState(null);
   const [processingStatus, setProcessingStatus] = useState(null);
+  const [analysisTranscript, setAnalysisTranscript] = useState(null);
   const navigate = useNavigate();
 
   const handleCopyClick = (agentKey) => {
@@ -22,22 +22,6 @@ const Home = () => {
     setCopiedAgent(agentKey);
     setTimeout(() => setCopiedAgent(null), 2000); // Reset after 2 seconds
   };
-
-  const handleChatMessage = useCallback((event) => {
-    try {
-      if (event?.data?.output?.generic?.[0]) {
-        const message = event.data.output.generic[0];
-        if (message.response_type === 'text' && message.text.startsWith('{"meetingAnalysis":')) {
-          console.log('📊 Received structured data from Watson Chat:', message.text);
-          const parsedData = JSON.parse(message.text);
-          setAiResults(parsedData);
-          setProcessingStatus(null); // Clear status on final result
-        }
-      }
-    } catch (error) {
-      // It's normal for many messages not to be the final JSON data, so we don't log every error.
-    }
-  }, []);
 
   const handleChatLoad = useCallback((instance) => {
     console.log("🚀 Watson Chat instance loaded!");
@@ -49,7 +33,7 @@ const Home = () => {
     instance.on('pre:send', (event) => {
       console.log('⬆️ pre:send', event);
       setProcessingStatus('Sending your message to the AI...');
-      setAiResults(null); // Clear previous results
+      setAnalysisTranscript(null); // Clear previous analysis
     });
 
     instance.on('send', (event) => {
@@ -58,11 +42,33 @@ const Home = () => {
 
     instance.on('pre:receive', (event) => {
       console.log('⬇️ pre:receive', event);
-      setProcessingStatus('AI is processing the information...');
+      const message = event.message?.content?.[0];
+
+      if (message && message.response_type === 'text') {
+        const text = message.text;
+        if (
+          text.includes('STEP 1: MEETING INTELLIGENCE') &&
+          text.includes('STEP 2: CRM ASSESSMENT') &&
+          text.includes('STEP 3: ENGAGEMENT STRATEGY')
+        ) {
+          // This is the final analysis, so set the transcript
+          setAnalysisTranscript(text);
+          setProcessingStatus(null);
+        } else {
+          // This is a conversational message, so hide the loader
+          setProcessingStatus(null);
+        }
+      } else {
+        setProcessingStatus('AI is processing the information...');
+      }
     });
     
-    instance.on('receive', handleChatMessage);
-  }, [handleChatMessage]);
+    instance.on('receive', (event) => {
+      // Clear the loader when any message is fully rendered in the chat.
+      console.log('✅ receive', event);
+      setProcessingStatus(null);
+    });
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -191,7 +197,7 @@ const Home = () => {
 
       {/* Live Results Display */}
       {processingStatus && <ProcessingLoader status={processingStatus} />}
-      {!processingStatus && aiResults && <ExtractedDataCard results={aiResults} />}
+      {analysisTranscript && <FullAnalysis transcript={analysisTranscript} />}
     </div>
   );
 };
