@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import WatsonChat from '../components/WatsonChat';
 import { WATSON_AGENTS } from '../config/watson';
 import ExtractedDataCard from '../components/ExtractedDataCard';
+import ProcessingLoader from '../components/ProcessingLoader';
 
 const SAMPLES = {
   AGENT_1: `Meeting with Sarah Johnson, VP Operations at TechCorp Inc. Sarah's email: sjohnson@techcorp.com Sarah's phone: (555) 123-4567 Budget: $150,000 approved for this fiscal year - Sarah has sign-off authority up to $200K Timeline: Need to decide by end of Q1 (March 31st) - they have a board meeting April 1st where they need to show progress Pain point: Current manual data entry takes 20 hours/week across their operations team of 5 people. This is costing approximately $50,000 annually in labor, plus another $30K in errors and rework. Sarah said: "This is our top priority for Q1. We're hemorrhaging money on manual processes." Impressed with our automation features, especially the AI-powered data extraction. Asked detailed questions about implementation timeline and ROI calculation. Will schedule demo for CEO next week - CEO name is Michael Chen, he's the final decision maker for purchases over $100K. Also mentioned they're currently using Salesforce but very dissatisfied with automation capabilities. Quote: "Salesforce is great for CRM but terrible for actual workflow automation." Decision process: Sarah will present to CEO with IT Director (James Park) next week. If approved, can start implementation immediately. Next steps agreed: 1. Send demo video by Friday 2. CEO presentation next Tuesday 2pm 3. Provide case study from similar manufacturing company Industry: Manufacturing, specifically automotive parts Company size: 250 employees, $50M annual revenue`,
@@ -13,6 +14,7 @@ const SAMPLES = {
 const Home = () => {
   const [copiedAgent, setCopiedAgent] = useState(null);
   const [aiResults, setAiResults] = useState(null);
+  const [processingStatus, setProcessingStatus] = useState(null);
   const navigate = useNavigate();
 
   const handleCopyClick = (agentKey) => {
@@ -29,6 +31,7 @@ const Home = () => {
           console.log('📊 Received structured data from Watson Chat:', message.text);
           const parsedData = JSON.parse(message.text);
           setAiResults(parsedData);
+          setProcessingStatus(null); // Clear status on final result
         }
       }
     } catch (error) {
@@ -45,6 +48,8 @@ const Home = () => {
 
     instance.on('pre:send', (event) => {
       console.log('⬆️ pre:send', event);
+      setProcessingStatus('Sending your message to the AI...');
+      setAiResults(null); // Clear previous results
     });
 
     instance.on('send', (event) => {
@@ -53,6 +58,7 @@ const Home = () => {
 
     instance.on('pre:receive', (event) => {
       console.log('⬇️ pre:receive', event);
+      setProcessingStatus('AI is processing the information...');
     });
     
     instance.on('receive', handleChatMessage);
@@ -184,7 +190,8 @@ const Home = () => {
       />
 
       {/* Live Results Display */}
-      {aiResults && <ExtractedDataCard results={aiResults} />}
+      {processingStatus && <ProcessingLoader status={processingStatus} />}
+      {!processingStatus && aiResults && <ExtractedDataCard results={aiResults} />}
     </div>
   );
 };
