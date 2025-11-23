@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import WatsonChat from '../components/WatsonChat';
 import { WATSON_AGENTS } from '../config/watson';
 import ProcessingLoader from '../components/ProcessingLoader';
 import FullAnalysis from '../components/FullAnalysis';
+import AgentDashboard from '../components/AgentDashboard';
 
 const SAMPLES = {
   AGENT_1: `Meeting with Sarah Johnson, VP Operations at TechCorp Inc. Sarah's email: sjohnson@techcorp.com Sarah's phone: (555) 123-4567 Budget: $150,000 approved for this fiscal year - Sarah has sign-off authority up to $200K Timeline: Need to decide by end of Q1 (March 31st) - they have a board meeting April 1st where they need to show progress Pain point: Current manual data entry takes 20 hours/week across their operations team of 5 people. This is costing approximately $50,000 annually in labor, plus another $30K in errors and rework. Sarah said: "This is our top priority for Q1. We're hemorrhaging money on manual processes." Impressed with our automation features, especially the AI-powered data extraction. Asked detailed questions about implementation timeline and ROI calculation. Will schedule demo for CEO next week - CEO name is Michael Chen, he's the final decision maker for purchases over $100K. Also mentioned they're currently using Salesforce but very dissatisfied with automation capabilities. Quote: "Salesforce is great for CRM but terrible for actual workflow automation." Decision process: Sarah will present to CEO with IT Director (James Park) next week. If approved, can start implementation immediately. Next steps agreed: 1. Send demo video by Friday 2. CEO presentation next Tuesday 2pm 3. Provide case study from similar manufacturing company Industry: Manufacturing, specifically automotive parts Company size: 250 employees, $50M annual revenue`,
@@ -15,7 +15,7 @@ const Home = () => {
   const [copiedAgent, setCopiedAgent] = useState(null);
   const [processingStatus, setProcessingStatus] = useState(null);
   const [analysisTranscript, setAnalysisTranscript] = useState(null);
-  const navigate = useNavigate();
+  const [showAgentDashboard, setShowAgentDashboard] = useState(false);
 
   const handleCopyClick = (agentKey) => {
     navigator.clipboard.writeText(SAMPLES[agentKey]);
@@ -68,7 +68,7 @@ const Home = () => {
       console.log('✅ receive', event);
       setProcessingStatus(null);
     });
-  }, [navigate]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -179,7 +179,7 @@ const Home = () => {
         {/* Try Chat Button */}
         <div className="text-center mt-8">
           <button
-            onClick={() => navigate('/agents')}
+            onClick={() => setShowAgentDashboard(true)}
             className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
           >
             🤖 Explore the Agent Dashboard
@@ -198,6 +198,9 @@ const Home = () => {
       {/* Live Results Display */}
       {processingStatus && <ProcessingLoader status={processingStatus} />}
       {analysisTranscript && <FullAnalysis transcript={analysisTranscript} />}
+
+      {/* Agent Dashboard Modal */}
+      {showAgentDashboard && <AgentDashboard onClose={() => setShowAgentDashboard(false)} />}
     </div>
   );
 };
