@@ -401,9 +401,9 @@ MIT License
 
 ## 👥 Team
 
-- **Claire** - AI Engineer (watsonx integration, AI extraction)
-- **Abdullah** - Backend Developer (API architecture, CRM integration)
-- **goodgame#069** - Frontend Developer (React UI, UX design)
+- **Claire** - AI Engineer and Frontend Developer 
+- **Abdullah** - Backend Developer 
+- **goodgame#069** - Backend Developer 
 
 ## 🙏 Acknowledgments
 
