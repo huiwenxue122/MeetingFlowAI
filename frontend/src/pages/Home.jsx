@@ -126,13 +126,16 @@ const Home = () => {
         {/* Instructions */}
         <div className="max-w-4xl mx-auto my-12 bg-white rounded-2xl shadow-xl p-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">How to Use the Agents</h2>
-          <p className="text-gray-600 mb-6">
-            Click the button below to copy a sample meeting summary, then paste it into the chat window
-            at the bottom-right to see the AI agents in action!
-          </p>
+          <div className="flex items-center justify-center gap-4">
+            <p className="text-gray-600">
+              Click the button below to copy a sample meeting summary, then paste it into the chat window
+              at the bottom-right to see the AI agents in action!
+            </p>
+            <img src="/chat-button.png" alt="Chat button" className="w-16 h-16" />
+          </div>
           <button
             onClick={handleCopyClick}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition text-lg"
+            className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition text-lg"
           >
             {isCopied ? 'Copied!' : '📋 Copy Sample Text'}
           </button>
