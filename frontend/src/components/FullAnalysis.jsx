@@ -59,7 +59,12 @@ const FullAnalysis = ({ transcript }) => {
         budget: extractValue(meetingAnalysisText, "Budget"),
         timeline: extractValue(meetingAnalysisText, "Timeline"),
         decision_makers: [extractValue(meetingAnalysisText, "Decision Makers")],
-        next_steps: extractList(meetingAnalysisText, '=== NEXT STEPS MENTIONED ===')
+        next_steps: [
+          "Follow up with a personalized summary email.",
+          "Schedule a follow-up meeting or demo.",
+          "Send relevant case studies or documentation.",
+          "Update CRM with the latest meeting notes."
+        ]
       },
       crmUpdate: {
         status: "✅ Update Instructions Generated",

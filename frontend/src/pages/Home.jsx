@@ -159,10 +159,10 @@ const Home = () => {
         {/* Try Chat Button */}
         <div className="text-center mt-8">
           <button
-            onClick={() => setShowAgentDashboard(true)}
+            onClick={() => setShowAgentDashboard(prev => !prev)}
             className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
           >
-            🤖 Explore the Agents
+            {showAgentDashboard ? '🤖 Hide Agent Dashboard' : '🤖 Explore the Agents'}
           </button>
         </div>
       </div>
