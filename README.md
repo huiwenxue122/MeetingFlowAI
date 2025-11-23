@@ -1,12 +1,12 @@
-# SalesFlow AI - Multi-Agent Sales Automation System
+# MeetingFlow AI - Multi-Agent Sales Automation System
 
 > **Transform 15 minutes of post-call admin work into 2 minutes** with AI-powered automation
 
-SalesFlow AI is a comprehensive sales automation platform built for the IBM watsonx Orchestrate Hackathon. It uses a multi-agent AI system to automatically process sales meeting transcripts, extract key information, update CRM systems, and generate follow-up communications.
+MeetingFlow AI is a comprehensive sales automation platform built for the IBM watsonx Orchestrate Hackathon. It uses a multi-agent AI system to automatically process sales meeting transcripts, extract key information, update CRM systems, and generate follow-up communications.
 
 ## 🎯 Project Overview
 
-SalesFlow AI leverages IBM watsonx Orchestrate's multi-agent architecture to automate the entire post-meeting workflow:
+MeetingFlow AI leverages IBM watsonx Orchestrate's multi-agent architecture to automate the entire post-meeting workflow:
 
 1. **SalesFlow AI Orchestrator** (Master Agent) - Coordinates all sub-agents
 2. **Sales Intelligence Agent** - Analyzes meeting transcripts and extracts key information
