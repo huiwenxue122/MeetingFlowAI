@@ -176,7 +176,7 @@ const Home = () => {
             onClick={() => navigate('/agents')}
             className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
           >
-            🤖 Try Interactive AI Chat
+            🤖 Explore the Agent Dashboard
           </button>
         </div>
       </div>
