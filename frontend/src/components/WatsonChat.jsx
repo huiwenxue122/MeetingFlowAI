@@ -4,6 +4,7 @@ import { WATSON_CONFIG } from '../config/watson';
 const WatsonChat = ({ 
   agentId,
   agentEnvironmentId,
+  onLoad, // Use onLoad for robust event handling
   layout = "float",
   showLauncher = true
 }) => {
@@ -21,6 +22,7 @@ const WatsonChat = ({
         chatOptions: {
           agentId: agentId,
           agentEnvironmentId: agentEnvironmentId,
+          onLoad: onLoad, // Pass onLoad handler directly
         },
         layout: {
           form: layout,
@@ -42,7 +44,7 @@ const WatsonChat = ({
         script.async = true;
         
         script.addEventListener('load', () => {
-          console.log('✅ Watson Chat loaded successfully');
+          console.log('✅ Watson Chat script loaded');
           if (window.wxoLoader) {
             try {
               window.wxoLoader.init();
@@ -64,12 +66,14 @@ const WatsonChat = ({
     // Cleanup
     return () => {
       clearTimeout(timer);
+
       if (scriptRef.current && document.head.contains(scriptRef.current)) {
+        // The script doesn't have a cleanup method, but we can remove it
         document.head.removeChild(scriptRef.current);
         scriptRef.current = null;
       }
     };
-  }, [agentId, agentEnvironmentId, layout, showLauncher]);
+  }, [agentId, agentEnvironmentId, layout, showLauncher, onLoad]);
 
   return <div id="watson-chat-root" className="watson-chat-container" />;
 };
