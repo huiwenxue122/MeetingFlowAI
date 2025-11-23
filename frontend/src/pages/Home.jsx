@@ -5,22 +5,18 @@ import ProcessingLoader from '../components/ProcessingLoader';
 import FullAnalysis from '../components/FullAnalysis';
 import AgentDashboard from '../components/AgentDashboard';
 
-const SAMPLES = {
-  AGENT_1: `Meeting with Sarah Johnson, VP Operations at TechCorp Inc. Sarah's email: sjohnson@techcorp.com Sarah's phone: (555) 123-4567 Budget: $150,000 approved for this fiscal year - Sarah has sign-off authority up to $200K Timeline: Need to decide by end of Q1 (March 31st) - they have a board meeting April 1st where they need to show progress Pain point: Current manual data entry takes 20 hours/week across their operations team of 5 people. This is costing approximately $50,000 annually in labor, plus another $30K in errors and rework. Sarah said: "This is our top priority for Q1. We're hemorrhaging money on manual processes." Impressed with our automation features, especially the AI-powered data extraction. Asked detailed questions about implementation timeline and ROI calculation. Will schedule demo for CEO next week - CEO name is Michael Chen, he's the final decision maker for purchases over $100K. Also mentioned they're currently using Salesforce but very dissatisfied with automation capabilities. Quote: "Salesforce is great for CRM but terrible for actual workflow automation." Decision process: Sarah will present to CEO with IT Director (James Park) next week. If approved, can start implementation immediately. Next steps agreed: 1. Send demo video by Friday 2. CEO presentation next Tuesday 2pm 3. Provide case study from similar manufacturing company Industry: Manufacturing, specifically automotive parts Company size: 250 employees, $50M annual revenue`,
-  AGENT_2: 'Update the CRM for TechCorp Inc. Contact is Sarah Johnson (sjohnson@techcorp.com). Set the deal stage to "Proposal Sent" and create a follow-up task to schedule a demo with the CEO, Michael Chen, for next Tuesday at 2 PM.',
-  AGENT_3: 'Draft a follow-up email to Sarah Johnson at TechCorp Inc. Reference our recent meeting, attach the demo video and the manufacturing case study we discussed, and confirm the presentation with her CEO, Michael Chen, for next Tuesday at 2 PM.',
-};
+const SAMPLE_TEXT = `Meeting with Sarah Johnson, VP Operations at TechCorp Inc. Sarah's email: sjohnson@techcorp.com Sarah's phone: (555) 123-4567 Budget: $150,000 approved for this fiscal year - Sarah has sign-off authority up to $200K Timeline: Need to decide by end of Q1 (March 31st) - they have a board meeting April 1st where they need to show progress Pain point: Current manual data entry takes 20 hours/week across their operations team of 5 people. This is costing approximately $50,000 annually in labor, plus another $30K in errors and rework. Sarah said: "This is our top priority for Q1. We're hemorrhaging money on manual processes." Impressed with our automation features, especially the AI-powered data extraction. Asked detailed questions about implementation timeline and ROI calculation. Will schedule demo for CEO next week - CEO name is Michael Chen, he's the final decision maker for purchases over $100K. Also mentioned they're currently using Salesforce but very dissatisfied with automation capabilities. Quote: "Salesforce is great for CRM but terrible for actual workflow automation." Decision process: Sarah will present to CEO with IT Director (James Park) next week. If approved, can start implementation immediately. Next steps agreed: 1. Send demo video by Friday 2. CEO presentation next Tuesday 2pm 3. Provide case study from similar manufacturing company Industry: Manufacturing, specifically automotive parts Company size: 250 employees, $50M annual revenue`;
 
 const Home = () => {
-  const [copiedAgent, setCopiedAgent] = useState(null);
+  const [isCopied, setIsCopied] = useState(false);
   const [processingStatus, setProcessingStatus] = useState(null);
   const [analysisTranscript, setAnalysisTranscript] = useState(null);
   const [showAgentDashboard, setShowAgentDashboard] = useState(false);
 
-  const handleCopyClick = (agentKey) => {
-    navigator.clipboard.writeText(SAMPLES[agentKey]);
-    setCopiedAgent(agentKey);
-    setTimeout(() => setCopiedAgent(null), 2000); // Reset after 2 seconds
+  const handleCopyClick = () => {
+    navigator.clipboard.writeText(SAMPLE_TEXT);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
   };
 
   const handleChatLoad = useCallback((instance) => {
@@ -87,7 +83,7 @@ const Home = () => {
         </div>
 
         {/* Multi-Agent Architecture Visualization */}
-        <div className="max-w-4xl mx-auto mb-12 bg-white rounded-2xl shadow-xl p-8">
+        <div className="max-w-4xl mx-auto my-12 bg-white rounded-2xl shadow-xl p-8">
           <h2 className="text-2xl font-bold text-center mb-6">🤖 Multi-Agent AI Workflow</h2>
           
           <div className="flex flex-col items-center space-y-4">
@@ -103,64 +99,48 @@ const Home = () => {
 
             {/* Sub-Agents Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-              <div className="bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-xl text-center border-2 border-green-400 shadow-md hover:shadow-lg transition flex flex-col justify-between">
-                <div>
-                  <div className="text-4xl mb-2">🔍</div>
-                  <div className="font-bold text-gray-900">Agent 1</div>
-                  <div className="text-sm text-gray-700 font-medium">Sales Intelligence</div>
-                  <div className="text-xs text-gray-600 mt-1">Analyzes meetings</div>
-                </div>
-                <button
-                  onClick={() => handleCopyClick('AGENT_1')}
-                  className="mt-4 w-full px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition"
-                >
-                  {copiedAgent === 'AGENT_1' ? 'Copied!' : 'Copy Sample'}
-                </button>
+              <div className="bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-xl text-center border-2 border-green-400 shadow-md">
+                <div className="text-4xl mb-2">🔍</div>
+                <div className="font-bold text-gray-900">Agent 1</div>
+                <div className="text-sm text-gray-700 font-medium">Sales Intelligence</div>
+                <div className="text-xs text-gray-600 mt-1">Analyzes meetings</div>
               </div>
 
-              <div className="bg-gradient-to-br from-purple-100 to-purple-200 p-6 rounded-xl text-center border-2 border-purple-400 shadow-md hover:shadow-lg transition flex flex-col justify-between">
-                <div>
-                  <div className="text-4xl mb-2">💼</div>
-                  <div className="font-bold text-gray-900">Agent 2</div>
-                  <div className="text-sm text-gray-700 font-medium">CRM Intelligence</div>
-                  <div className="text-xs text-gray-600 mt-1">Updates Salesforce</div>
-                </div>
-                <button
-                  onClick={() => handleCopyClick('AGENT_2')}
-                  className="mt-4 w-full px-4 py-2 bg-purple-500 text-white rounded-lg font-semibold hover:bg-purple-600 transition"
-                >
-                  {copiedAgent === 'AGENT_2' ? 'Copied!' : 'Copy Sample'}
-                </button>
+              <div className="bg-gradient-to-br from-purple-100 to-purple-200 p-6 rounded-xl text-center border-2 border-purple-400 shadow-md">
+                <div className="text-4xl mb-2">💼</div>
+                <div className="font-bold text-gray-900">Agent 2</div>
+                <div className="text-sm text-gray-700 font-medium">CRM Intelligence</div>
+                <div className="text-xs text-gray-600 mt-1">Updates Salesforce</div>
               </div>
 
-              <div className="bg-gradient-to-br from-pink-100 to-pink-200 p-6 rounded-xl text-center border-2 border-pink-400 shadow-md hover:shadow-lg transition flex flex-col justify-between">
-                <div>
-                  <div className="text-4xl mb-2">📧</div>
-                  <div className="font-bold text-gray-900">Agent 3</div>
-                  <div className="text-sm text-gray-700 font-medium">Engagement Automation</div>
-                  <div className="text-xs text-gray-600 mt-1">Generates follow-ups</div>
-                </div>
-                <button
-                  onClick={() => handleCopyClick('AGENT_3')}
-                  className="mt-4 w-full px-4 py-2 bg-pink-500 text-white rounded-lg font-semibold hover:bg-pink-600 transition"
-                >
-                  {copiedAgent === 'AGENT_3' ? 'Copied!' : 'Copy Sample'}
-                </button>
+              <div className="bg-gradient-to-br from-pink-100 to-pink-200 p-6 rounded-xl text-center border-2 border-pink-400 shadow-md">
+                <div className="text-4xl mb-2">📧</div>
+                <div className="font-bold text-gray-900">Agent 3</div>
+                <div className="text-sm text-gray-700 font-medium">Engagement Automation</div>
+                <div className="text-xs text-gray-600 mt-1">Generates follow-ups</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Instructions */}
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
+        <div className="max-w-4xl mx-auto my-12 bg-white rounded-2xl shadow-xl p-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">How to Use the Agents</h2>
-          <p className="text-gray-600">
-            Click one of the "Copy Sample" buttons above, then paste the text into the chat window
+          <p className="text-gray-600 mb-6">
+            Click the button below to copy a sample meeting summary, then paste it into the chat window
             at the bottom-right to see the AI agents in action!
           </p>
-          
-          {/* Value Proposition */}
-          <div className="mt-8 grid grid-cols-3 gap-4 pt-8 border-t">
+          <button
+            onClick={handleCopyClick}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition text-lg"
+          >
+            {isCopied ? 'Copied!' : '📋 Copy Sample Text'}
+          </button>
+        </div>
+        
+        {/* Value Proposition */}
+        <div className="max-w-4xl mx-auto my-12 bg-white rounded-2xl shadow-xl p-8">
+          <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-600">15→2 min</div>
               <div className="text-sm text-gray-600">Time Saved</div>
@@ -182,7 +162,7 @@ const Home = () => {
             onClick={() => setShowAgentDashboard(true)}
             className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
           >
-            🤖 Explore the Agent Dashboard
+            🤖 Explore the Agents
           </button>
         </div>
       </div>
