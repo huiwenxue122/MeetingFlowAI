@@ -221,9 +221,9 @@ MIT License
 
 ## 👥 Team
 
-- **Claire** - AI Engineer and Frontend Developer - [huiwenxue122](https://github.com/huiwenxue122)
-- **Abdullah** - Backend Developer - [MajorAbdullah](https://github.com/MajorAbdullah)
-- **808vita** - Backend Developer - [808vita](https://github.com/808vita)
+- **Claire** - AI Engineer and  Product Manager - [huiwenxue122](https://github.com/huiwenxue122)
+- **Abdullah** - Full-stack Developer - [MajorAbdullah](https://github.com/MajorAbdullah)
+- **808vita** - Full-stack Developer - [808vita](https://github.com/808vita)
 
 ## 🙏 Acknowledgments
 
