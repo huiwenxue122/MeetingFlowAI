@@ -2,7 +2,7 @@
 
 > **Transform 15 minutes of post-call admin work into 2 minutes** with AI-powered automation
 
-MeetingFlowAI is a comprehensive sales automation platform built for the IBM watsonx Orchestrate Hackathon. It uses a multi-agent AI system to automatically process sales meeting transcripts, extract key information, update CRM systems, and generate follow-up communications.
+MeetingFlowAI is a comprehensive sales automation platform built for the IBM watsonx Orchestrate Hackathon. It uses a multi-agent AI system to automatically process sales meeting transcripts, extract key information, update CRM systems, and generate follow-up communications.**📺 [Click here to watch the full demo on YouTube](https://youtu.be/Oo2z6eTNao8)**  
 
 ## 🎯 Project Overview
 
